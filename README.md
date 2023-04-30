@@ -6,4 +6,3 @@ make .env for :
 - DB_USER
 - DB_PASSWORD
 - DB_HOST
-- SECRET_KEY
