@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const { Sequelize, DataTypes } = require('sequelize');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config()
 
@@ -40,13 +41,14 @@ sequelize.sync().then(() => {
 // Configuration de l'application Express
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 // Configuration du secret pour les tokens JWT
 const jwtSecret = process.env.SECRET_KEY;
 
 // Middleware pour vérifier le token JWT
 const verifyJwtToken = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization.split(' ')[1];
     if (!token) {
         return res.status(401).send({ message: 'Unauthorized' });
     }
@@ -59,9 +61,12 @@ const verifyJwtToken = (req, res, next) => {
     }
 };
 
+
+
 // Route pour ajouter un score à la base de données
-app.post('/scores', verifyJwtToken, async (req, res) => {
+app.post('/scores', async (req, res) => {
     const { pseudo, score } = req.body;
+    console.log(req.body)
     try {
         const newScore = await Score.create({ pseudo, score });
         res.status(201).send({ message: 'Score created', score: newScore });
@@ -70,11 +75,38 @@ app.post('/scores', verifyJwtToken, async (req, res) => {
     }
 });
 
-// Route pour récupérer la liste des scores depuis la base de données
-app.get('/scores',verifyJwtToken, async (req, res) => {
+// Route pour récupérer la liste des scores (N premiers) depuis la base de données
+app.get('/scores', async (req, res) => {
+    const { limit } = req.query;
     try {
-        const scores = await Score.findAll({ order: [['score', 'DESC']] });
+        const scores = await Score.findAll({
+            limit: limit || 10,
+            order: [
+                ['score', 'DESC']
+            ]
+        });
         res.status(200).send({ scores });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+});
+
+//récupérer un score par son classement mais renvoyer un status différent si pas de score pour le rang donné
+app.get('/scores/:rank', async (req, res) => {
+    const { rank } = req.params;
+    try {
+        const scores = await Score.findAll({
+            limit: 1,
+            offset: rank - 1,
+            order: [
+                ['score', 'DESC']
+            ]
+        });
+        if (scores.length === 0) {
+            res.status(404).send({ message: 'No score for this rank' });
+        }else{
+            res.status(200).send({ scores });
+        }
     } catch (err) {
         res.status(500).send({ message: err.message });
     }

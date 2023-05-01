@@ -1,0 +1,30 @@
+{
+  "name": "api-quacker-jump",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasFerryPro/API-Quacker-Jump.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucasFerryPro/API-Quacker-Jump/issues"
+  },
+  "homepage": "https://github.com/LucasFerryPro/API-Quacker-Jump#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0",
+    "postgres": "^3.3.4",
+    "sequelize": "^6.29.3"
+  }
+}
